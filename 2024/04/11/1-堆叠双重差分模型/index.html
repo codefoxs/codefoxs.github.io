@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>堆叠双重差分模型 - CodeFox</title><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#95c2e1"><meta name="application-name" content="CodeFox"><meta name="msapplication-TileImage" content="/assets/favo.png"><meta name="msapplication-TileColor" content="#95c2e1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CodeFox"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="堆叠双重差分模型方法"><meta property="og:type" content="blog"><meta property="og:title" content="CodeFox"><meta property="og:url" content="https://codefoxs.github.io/"><meta property="og:site_name" content="CodeFox"><meta property="og:description" content="堆叠双重差分模型方法"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281619362.png"><meta property="article:published_time" content="2024-04-11T02:55:00.000Z"><meta property="article:modified_time" content="2024-06-05T06:49:19.216Z"><meta property="article:author" content="CodeFox"><meta property="article:tag" content="数学"><meta property="article:tag" content="Stata"><meta property="article:tag" content="计量经济学"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281619362.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://codefoxs.github.io/2024/04/11/1-%E5%A0%86%E5%8F%A0%E5%8F%8C%E9%87%8D%E5%B7%AE%E5%88%86%E6%A8%A1%E5%9E%8B/"},"headline":"堆叠双重差分模型","image":["https://raw.githubusercontent.com/codefoxs/picgo/main/202405281619362.png"],"datePublished":"2024-04-11T02:55:00.000Z","dateModified":"2024-06-05T06:49:19.216Z","author":{"@type":"Person","name":"CodeFox"},"publisher":{"@type":"Organization","name":"CodeFox","logo":{"@type":"ImageObject","url":"https://codefoxs.github.io/assets/bar.png"}},"description":"堆叠双重差分模型方法"}</script><link rel="canonical" href="https://codefoxs.github.io/2024/04/11/1-%E5%A0%86%E5%8F%A0%E5%8F%8C%E9%87%8D%E5%B7%AE%E5%88%86%E6%A8%A1%E5%9E%8B/"><link rel="alternate" href="/atom.xml" title="CodeFox" type="application/atom+xml"><link rel="icon" href="/assets/favo.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.2.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/assets/bar.png" alt="CodeFox" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">所有文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/essay">随笔</a><a class="navbar-item" href="/stata">Stata</a><a class="navbar-item" href="/about">关于我</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-6-widescreen"><div class="card"><div class="card-image"><span class="image is-7by3"><img class="fill" src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281619362.png" alt="堆叠双重差分模型"></span></div><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2024-04-11T02:55:00.000Z" title="2024/4/11 10:55:00">2024-04-11</time>发表</span><span class="level-item"><time dateTime="2024-06-05T06:49:19.216Z" title="2024/6/5 14:49:19">2024-06-05</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">编程学习</a></span><span class="level-item">6 分钟读完 (大约874个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">堆叠双重差分模型</h1><div class="content"><blockquote>
+<p>堆叠双重差分模型方法</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="1-堆叠DID（stacked-DID）和多期DID（staggered-DID）的区别"><a href="#1-堆叠DID（stacked-DID）和多期DID（staggered-DID）的区别" class="headerlink" title="1 堆叠DID（stacked DID）和多期DID（staggered DID）的区别"></a>1 堆叠DID（stacked DID）和多期DID（staggered DID）的区别</h2><h3 id="1-1-Difference-in-data"><a href="#1-1-Difference-in-data" class="headerlink" title="1.1 Difference in data"></a>1.1 Difference in data</h3><ul>
+<li>Setting</li>
+</ul>
+<p>Sample windows: 2001 - 2005</p>
+<table>
+<thead>
+<tr>
+<th align="left">Adoption year</th>
+<th align="left">stkcd</th>
+<th align="left">Group type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1999</td>
+<td align="left">1</td>
+<td align="left">Always treated</td>
+</tr>
+<tr>
+<td align="left">2002</td>
+<td align="left">2</td>
+<td align="left">Early treated</td>
+</tr>
+<tr>
+<td align="left">2004</td>
+<td align="left">3</td>
+<td align="left">Late treated</td>
+</tr>
+<tr>
+<td align="left">.</td>
+<td align="left">4</td>
+<td align="left">Never treated</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Staggered DID panel data (N &#x3D; 4 $\times$ 5 &#x3D; 20)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">stkcd</th>
+<th align="left">year</th>
+<th align="left">y</th>
+<th align="left">DID</th>
+<th align="left">Treat</th>
+<th align="left">Adoption year</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">2001</td>
+<td align="left">55</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">64</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2003</td>
+<td align="left">21</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">45</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2005</td>
+<td align="left">67</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2001</td>
+<td align="left">82</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2002</td>
+<td align="left">63</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2003</td>
+<td align="left">78</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2004</td>
+<td align="left">99</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2005</td>
+<td align="left">51</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2001</td>
+<td align="left">54</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2002</td>
+<td align="left">36</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2003</td>
+<td align="left">41</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2004</td>
+<td align="left">65</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2005</td>
+<td align="left">94</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2001</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2002</td>
+<td align="left">37</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2003</td>
+<td align="left">11</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2004</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2005</td>
+<td align="left">44</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Stacked DID panel data (N &#x3D; 3 $\times$ 10 &#x3D; 30)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">stkcd</th>
+<th align="left">year</th>
+<th align="left">y</th>
+<th align="left">DID</th>
+<th align="left">Treat</th>
+<th align="left">Adoption year in cohort</th>
+<th align="left">Cohort</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">2001</td>
+<td align="left">55</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">64</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2003</td>
+<td align="left">21</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">45</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">2005</td>
+<td align="left">67</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">1999</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2001</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2002</td>
+<td align="left">37</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2003</td>
+<td align="left">11</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2004</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2005</td>
+<td align="left">44</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2001</td>
+<td align="left">82</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2002</td>
+<td align="left">63</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2003</td>
+<td align="left">78</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2004</td>
+<td align="left">99</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2005</td>
+<td align="left">51</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2002</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2001</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2002</td>
+<td align="left">37</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2003</td>
+<td align="left">11</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2004</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2005</td>
+<td align="left">44</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2001</td>
+<td align="left">54</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2002</td>
+<td align="left">36</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2003</td>
+<td align="left">41</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2004</td>
+<td align="left">65</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">2005</td>
+<td align="left">94</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">2004</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2001</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2002</td>
+<td align="left">37</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2003</td>
+<td align="left">11</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2004</td>
+<td align="left">76</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">2005</td>
+<td align="left">44</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">.</td>
+<td align="left">3</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-Difference-in-specification"><a href="#1-2-Difference-in-specification" class="headerlink" title="1.2 Difference in specification"></a>1.2 Difference in specification</h3><ul>
+<li>Staggered DID specification</li>
+</ul>
+<p>$$<br>y_{it} &#x3D; \alpha + \beta DID_{it} + \eta’ Controls_{it} + \delta_{i} + \lambda_{t} + \varepsilon_{it}<br>$$</p>
+<p>where</p>
+<p>$y_{it}$ is the outcome variable</p>
+<p>$DID_{it}$ is the event dummy variable</p>
+<p> $Controls_{it}$ is a vector contains a series of variables</p>
+<p>$\delta_i$ and $\lambda_t$ are firm and year fixed effect, respectively</p>
+<ul>
+<li>Stacked DID</li>
+</ul>
+<ol>
+<li>Reduced form</li>
+</ol>
+<p>$$<br>y_{ict} &#x3D; \alpha + \beta DID_{ict} + \eta’ Controls_{ict} + \delta_{ic} + \lambda_{tc} + \varepsilon_{ict}<br>$$</p>
+<p>where</p>
+<p>$c$ is the cohort of firm $i$</p>
+<p>$\delta_{ic}$ and $\lambda_{tc}$ are firm-cohort and year-cohort interacted fixed effect, respectively</p>
+<ol start="2">
+<li>Event study form</li>
+</ol>
+<p>$$<br>y_{ict} &#x3D; \alpha + \sum\limits_{<br>\begin{array}{*{20}{c}}<br>{- 3 \leqslant k  \leqslant 3} \<br>{k  \ne  - 1}<br>\end{array}}<br>\beta_k Treat_{ic} \times I( t - A_c &#x3D; k ) + \eta’ Controls_{ict} + \delta_{ic} + \lambda_{tc} + \varepsilon_{ict}<br>$$</p>
+<p>where</p>
+<p>$A_c$ is the adoption year of cohort $c$</p>
+<p>$I()$ is an indicator function, equaling 1 when the inner equation holds</p>
+<p>or more specifically<br>$$<br>y_{ict} &#x3D; \alpha + Before3_{ict} + Before2_{ict} + Currenct_{ict} + After1_{ict} + After2_{ict} + After3_{ict} + \eta’ Controls_{ict} + \delta_{ic} + \lambda_{tc} + \varepsilon_{ict}<br>$$</p>
+<h2 id="2-偏误的来源"><a href="#2-偏误的来源" class="headerlink" title="2 偏误的来源"></a>2 偏误的来源</h2><ul>
+<li>Two assumption for common trend<ul>
+<li>Time-varying confounders must affect outcomes in both groups in the same way. -&gt; Time fixed effects  </li>
+<li>Group-varying confounders must be time-invariant.  -&gt; Group fixed effects</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Goodman-Bacon, A. (2021). Difference-in-differences with variation in treatment timing. Journal of Econometrics, 225(2): 254-277.</p>
+</blockquote>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281619362.png" alt="培根分解图" style="zoom:67%;"></center>
+
+
+<p>Because the early group (bad control) is treated as a control group</p>
+<p>See more details in <code>Staggered Adoption Designs and Stacked DID and Event Studies</code> (Coady Wing, 2021)</p>
+<h2 id="3-Stata-code"><a href="#3-Stata-code" class="headerlink" title="3 Stata code"></a>3 Stata code</h2><h3 id="3-1-Staggered-DID"><a href="#3-1-Staggered-DID" class="headerlink" title="3.1 Staggered DID"></a>3.1 Staggered DID</h3><ul>
+<li>code</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cd</span> <span class="string">&quot;D:\code\Stata\stackeddid&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="string">&quot;demo.dta&quot;</span>, <span class="keyword">clear</span></span><br><span class="line"><span class="comment">* Staggered did</span></span><br><span class="line">reghdfe y did, a(stkcd year) <span class="keyword">vce</span>(<span class="keyword">cl</span> stkcd)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>output</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">. reghdfe y did, a(stkcd year) <span class="keyword">vce</span>(<span class="keyword">cl</span> stkcd)</span><br><span class="line">(MWFE estimator converged <span class="keyword">in</span> 2 iterations)</span><br><span class="line"></span><br><span class="line">HDFE Linear regression                            Number of obs   =         20</span><br><span class="line">Absorbing 2 HDFE groups                           <span class="built_in">F</span>(   1,      3) =      17.15</span><br><span class="line">Statistics robust to heteroskedasticity           <span class="keyword">Prob</span> &gt; F        =     0.0256</span><br><span class="line">                                                  R-squared       =     0.5608</span><br><span class="line">                                                  Adj R-squared   =     0.1656</span><br><span class="line">                                                  Within R-sq.    =     0.0988</span><br><span class="line">Number of clusters (stkcd)   =          4         Root MSE        =    20.9805</span><br><span class="line"></span><br><span class="line">                                  (Std. <span class="keyword">err</span>. adjusted <span class="keyword">for</span> 4 clusters <span class="keyword">in</span> stkcd)</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">             |               Robust</span><br><span class="line">           y | Coefficient  std. <span class="keyword">err</span>.      t    P&gt;|t|     [95% <span class="keyword">conf</span>. interval]</span><br><span class="line">-------------+----------------------------------------------------------------</span><br><span class="line">         did |   19.26923    4.65359     4.14   0.026     4.459429    34.07903</span><br><span class="line">       _cons |   47.35192   2.559475    18.50   0.000     39.20653    55.49731</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Absorbed degrees of freedom:</span><br><span class="line">-----------------------------------------------------+</span><br><span class="line"> Absorbed FE | Categories  - Redundant  = Num. Coefs |</span><br><span class="line">-------------+---------------------------------------|</span><br><span class="line">       stkcd |         4           4           0    *|</span><br><span class="line">        year |         5           0           5     |</span><br><span class="line">-----------------------------------------------------+</span><br><span class="line"><span class="comment">* = FE nested within cluster; treated as redundant for DoF computation</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-Stacked-DID"><a href="#3-2-Stacked-DID" class="headerlink" title="3.2 Stacked DID"></a>3.2 Stacked DID</h3><ul>
+<li>code</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cd</span> <span class="string">&quot;D:\code\Stata\stackeddid&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="string">&quot;demo.dta&quot;</span>, <span class="keyword">clear</span></span><br><span class="line"><span class="comment">* Stacked did</span></span><br><span class="line"><span class="comment">// adoption year = 1999</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">if</span> adoptionyear == 2002</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">if</span> adoptionyear == 2004</span><br><span class="line"></span><br><span class="line"><span class="keyword">gen</span> cohort = 1</span><br><span class="line"></span><br><span class="line"><span class="keyword">save</span> <span class="string">&quot;cohort1.dta&quot;</span>, <span class="keyword">replace</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// adoption year = 2002</span></span><br><span class="line"><span class="keyword">use</span> <span class="string">&quot;demo.dta&quot;</span>, <span class="keyword">clear</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">if</span> adoptionyear == 1999</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">if</span> adoptionyear == 2004</span><br><span class="line"></span><br><span class="line"><span class="keyword">gen</span> cohort = 2</span><br><span class="line"></span><br><span class="line"><span class="keyword">save</span> <span class="string">&quot;cohort2.dta&quot;</span>, <span class="keyword">replace</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// adoption year = 2004</span></span><br><span class="line"><span class="keyword">use</span> <span class="string">&quot;demo.dta&quot;</span>, <span class="keyword">clear</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">if</span> adoptionyear == 1999</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">if</span> adoptionyear == 2002</span><br><span class="line"></span><br><span class="line"><span class="keyword">gen</span> cohort = 3</span><br><span class="line"></span><br><span class="line"><span class="keyword">save</span> <span class="string">&quot;cohort3.dta&quot;</span>, <span class="keyword">replace</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">append</span> using <span class="string">&quot;cohort1.dta&quot;</span></span><br><span class="line"><span class="keyword">append</span> using <span class="string">&quot;cohort2.dta&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">sort</span> cohort stkcd year</span><br><span class="line"><span class="keyword">save</span> <span class="string">&quot;stackedmain.dta&quot;</span>, <span class="keyword">replace</span></span><br><span class="line"></span><br><span class="line">reghdfe y did, a(stkcd#cohort year#cohort) <span class="keyword">vce</span>(<span class="keyword">cl</span> stkcd)</span><br><span class="line"></span><br><span class="line"><span class="comment">// event study form</span></span><br><span class="line"><span class="keyword">forvalue</span> i = 3(-1)2&#123;</span><br><span class="line">    <span class="keyword">gen</span> Before<span class="symbol">`i&#x27;</span>_ = <span class="built_in">cond</span>(year - adoptionyear &lt;= -<span class="symbol">`i&#x27;</span> &amp; adoptionyear != ., 1, 0)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">forvalue</span> i = 3(-1)1&#123;</span><br><span class="line">    <span class="keyword">gen</span> Before<span class="symbol">`i&#x27;</span> = <span class="built_in">cond</span>(year - adoptionyear == -<span class="symbol">`i&#x27;</span>, 1, 0)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">forvalue</span> i = 0(1)3&#123;</span><br><span class="line">    <span class="keyword">gen</span> After<span class="symbol">`i&#x27;</span> = <span class="built_in">cond</span>(year - adoptionyear == <span class="symbol">`i&#x27;</span>, 1, 0)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">forvalue</span> i = 2(1)3&#123;</span><br><span class="line">    <span class="keyword">gen</span> After<span class="symbol">`i&#x27;</span>_ = <span class="built_in">cond</span>(year - adoptionyear &gt;= <span class="symbol">`i&#x27;</span> &amp; adoptionyear != ., 1, 0)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">reghdfe y Before3 Before2 After0 After1 After2 After3, a(stkcd#cohort year#cohort) <span class="keyword">vce</span>(<span class="keyword">cl</span> stkcd)</span><br><span class="line"><span class="keyword">est</span> store m1</span><br><span class="line">coefplot m1, <span class="keyword">keep</span>(Before3 Before2 After0 After1 After2 After3) <span class="comment">///</span></span><br><span class="line">			 <span class="keyword">levels</span>(90) <span class="comment">///</span></span><br><span class="line">			 vertical yline(0) xline(3, lp(dash)) <span class="comment">///</span></span><br><span class="line">			 addplot(<span class="keyword">line</span> @b @at) ciopts(lpattern(dash) <span class="comment">///</span></span><br><span class="line">			 <span class="keyword">recast</span>(rcap) msize(medium)) <span class="comment">///</span></span><br><span class="line">			 msymbol(circle_hollow) <span class="comment">///</span></span><br><span class="line">			 scheme(s1mono)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>result</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">. reghdfe y did, a(stkcd#cohort year#cohort) <span class="keyword">vce</span>(<span class="keyword">cl</span> stkcd)</span><br><span class="line">(MWFE estimator converged <span class="keyword">in</span> 2 iterations)</span><br><span class="line"></span><br><span class="line">HDFE Linear regression                            Number of obs   =         30</span><br><span class="line">Absorbing 2 HDFE groups                           <span class="built_in">F</span>(   1,      3) =      89.20</span><br><span class="line">Statistics robust to heteroskedasticity           <span class="keyword">Prob</span> &gt; F        =     0.0025</span><br><span class="line">                                                  R-squared       =     0.7619</span><br><span class="line">                                                  Adj R-squared   =     0.1367</span><br><span class="line">                                                  Within R-sq.    =     0.0929</span><br><span class="line">Number of clusters (stkcd)   =          4         Root MSE        =    22.3113</span><br><span class="line"></span><br><span class="line">                                  (Std. <span class="keyword">err</span>. adjusted <span class="keyword">for</span> 4 clusters <span class="keyword">in</span> stkcd)</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">             |               Robust</span><br><span class="line">           y | Coefficient  std. <span class="keyword">err</span>.      t    P&gt;|t|     [95% <span class="keyword">conf</span>. interval]</span><br><span class="line">-------------+----------------------------------------------------------------</span><br><span class="line">         did |       20.2   2.138754     9.44   0.003     13.39353    27.00647</span><br><span class="line">       _cons |   47.49333   .7842096    60.56   0.000     44.99763    49.98904</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Absorbed degrees of freedom:</span><br><span class="line">--------------------------------------------------------+</span><br><span class="line">    Absorbed FE | Categories  - Redundant  = Num. Coefs |</span><br><span class="line">----------------+---------------------------------------|</span><br><span class="line">   stkcd#cohort |         6           6           0    *|</span><br><span class="line">    year#cohort |        15           0          15     |</span><br><span class="line">--------------------------------------------------------+</span><br><span class="line"><span class="comment">* = FE nested within cluster; treated as redundant for DoF computation</span></span><br><span class="line"></span><br><span class="line">. reghdfe y Before3 Before2 After0 After1 After2 After3, a(stkcd#cohort year#cohort) <span class="keyword">vce</span>(<span class="keyword">cl</span> stkcd)</span><br><span class="line">(MWFE estimator converged <span class="keyword">in</span> 2 iterations)</span><br><span class="line">warning: missing F statistic; dropped variables due to collinearity or too few clusters</span><br><span class="line"></span><br><span class="line">HDFE Linear regression                            Number of obs   =         30</span><br><span class="line">Absorbing 2 HDFE groups                           <span class="built_in">F</span>(   6,      3) =          .</span><br><span class="line">Statistics robust to heteroskedasticity           <span class="keyword">Prob</span> &gt; F        =          .</span><br><span class="line">                                                  R-squared       =     0.8914</span><br><span class="line">                                                  Adj R-squared   =    -0.0501</span><br><span class="line">                                                  Within R-sq.    =     0.5863</span><br><span class="line">Number of clusters (stkcd)   =          4         Root MSE        =    24.6071</span><br><span class="line"></span><br><span class="line">                                  (Std. <span class="keyword">err</span>. adjusted <span class="keyword">for</span> 4 clusters <span class="keyword">in</span> stkcd)</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line">             |               Robust</span><br><span class="line">           y | Coefficient  std. <span class="keyword">err</span>.      t    P&gt;|t|     [95% <span class="keyword">conf</span>. interval]</span><br><span class="line">-------------+----------------------------------------------------------------</span><br><span class="line">     Before3 |  -33.27778   10.94557    -3.04   0.056    -68.11146    1.555902</span><br><span class="line">     Before2 |  -12.27778   10.94557    -1.12   0.344    -47.11146     22.5559</span><br><span class="line">      After0 |  -7.916667    20.0721    -0.39   0.720    -71.79504    55.96171</span><br><span class="line">      After1 |   43.08333   12.77056     3.37   0.043     2.441714    83.72495</span><br><span class="line">      After2 |  -9.972222   11.97396    -0.83   0.466     -48.0787    28.13425</span><br><span class="line">      After3 |   6.027778   13.48936     0.45   0.685    -36.90138    48.95693</span><br><span class="line">       _cons |   54.33704   3.490034    15.57   0.001     43.23019    65.44388</span><br><span class="line">------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Absorbed degrees of freedom:</span><br><span class="line">--------------------------------------------------------+</span><br><span class="line">    Absorbed FE | Categories  - Redundant  = Num. Coefs |</span><br><span class="line">----------------+---------------------------------------|</span><br><span class="line">   stkcd#cohort |         6           6           0    *|</span><br><span class="line">    year#cohort |        15           0          15     |</span><br><span class="line">--------------------------------------------------------+</span><br><span class="line"><span class="comment">* = FE nested within cluster; treated as redundant for DoF computation</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281619577.png" alt="平行趋势图" style="zoom: 100%;"></center>
+
+<h2 id="4-参考文献"><a href="#4-参考文献" class="headerlink" title="4 参考文献"></a>4 参考文献</h2><div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+Chen, Z., Cao, Y., Feng, Z., Lu, M., & Shan, Y. (2023). Broadband infrastructure and stock price crash risk: Evidence from a quasi-natural experiment. Finance Research Letters, 58, 104026. Q2. https://doi.org/10.1016/j.frl.2023.104026
+</div>
+</div><div class="article-licensing box"><div class="licensing-title"><p>堆叠双重差分模型</p><p><a href="https://codefoxs.github.io/2024/04/11/1-堆叠双重差分模型/">https://codefoxs.github.io/2024/04/11/1-堆叠双重差分模型/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>CodeFox</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2024-04-11</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2024-06-05</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E6%95%B0%E5%AD%A6/">数学</a><a class="link-muted mr-2" rel="tag" href="/tags/Stata/">Stata</a><a class="link-muted mr-2" rel="tag" href="/tags/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6/">计量经济学</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2024/05/02/0-Homepage/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">【置顶】个人搜索网站</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2024/01/08/6-%E5%90%84%E7%A7%8D%E5%88%86%E7%BB%84%E5%9B%9E%E5%BD%92%E6%96%B9%E6%B3%95/"><span class="level-item">各种分组回归方法</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="SOHUCS" sid="2024/04/11/1-堆叠双重差分模型/"></div><script charset="utf-8" src="https://changyan.sohu.com/upload/changyan.js"></script><script>window.changyan.api.config({appid: 'cyxiA9lvU',conf: 'prod_25f08bcf7cc29ea8bf2d089bf60b1687'});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/assets/favo.png" alt="CodeFox"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">CodeFox</p><p class="is-size-6 is-block">追风赶月莫停留，平芜尽处是春山</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>广州 中国</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">13</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">7</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/codefoxs" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/codefoxs"><img src="/image/github.svg" style="height: 20px;width: 20px;"></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="知乎" href="https://www.zhihu.com/people/Keynes"><img src="/image/知乎.svg" style="height: 20px;width: 20px;"></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://lxxcandy.github.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">我的学术搭子😚</span></span><span class="level-right"><span class="level-item tag">lxxcandy.github.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Stata%E5%AD%A6%E4%B9%A0%E4%B8%93%E6%A0%8F/"><span class="level-start"><span class="level-item">Stata学习专栏</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%A4%BE%E7%A7%91%E5%9F%BA%E9%87%91/"><span class="level-start"><span class="level-item">社科基金</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">编程学习</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BD%91%E9%A1%B5%E8%AE%BE%E8%AE%A1/"><span class="level-start"><span class="level-item">网页设计</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/GitHub/"><span class="tag">GitHub</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Stata/"><span class="tag">Stata</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%90%9C%E7%B4%A2%E7%BD%91%E7%AB%99/"><span class="tag">搜索网站</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E5%AD%A6/"><span class="tag">数学</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%A4%BE%E7%A7%91%E5%9F%BA%E9%87%91/"><span class="tag">社科基金</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E5%8A%A0%E9%80%9F/"><span class="tag">网络加速</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6/"><span class="tag">计量经济学</span><span class="tag">9</span></a></div></div></div></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2024/08/"><span class="level-start"><span class="level-item">八月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/07/"><span class="level-start"><span class="level-item">七月 2024</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/06/"><span class="level-start"><span class="level-item">六月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/05/"><span class="level-start"><span class="level-item">五月 2024</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/04/"><span class="level-start"><span class="level-item">四月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/01/"><span class="level-start"><span class="level-item">一月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/12/"><span class="level-start"><span class="level-item">十二月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/05/"><span class="level-start"><span class="level-item">五月 2022</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="column-right-shadow is-hidden-widescreen is-sticky"></div></div><div class="column column-right is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-堆叠DID（stacked-DID）和多期DID（staggered-DID）的区别"><span class="level-left"><span class="level-item">1 堆叠DID（stacked DID）和多期DID（staggered DID）的区别</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#1-1-Difference-in-data"><span class="level-left"><span class="level-item">1.1 Difference in data</span></span></a></li><li><a class="level is-mobile" href="#1-2-Difference-in-specification"><span class="level-left"><span class="level-item">1.2 Difference in specification</span></span></a></li></ul></li><li><a class="level is-mobile" href="#2-偏误的来源"><span class="level-left"><span class="level-item">2 偏误的来源</span></span></a></li><li><a class="level is-mobile" href="#3-Stata-code"><span class="level-left"><span class="level-item">3 Stata code</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#3-1-Staggered-DID"><span class="level-left"><span class="level-item">3.1 Staggered DID</span></span></a></li><li><a class="level is-mobile" href="#3-2-Stacked-DID"><span class="level-left"><span class="level-item">3.2 Stacked DID</span></span></a></li></ul></li><li><a class="level is-mobile" href="#4-参考文献"><span class="level-left"><span class="level-item">4 参考文献</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-08-21T13:05:56.000Z">2024-08-21</time></p><p class="title"><a href="/2024/08/21/12-Stata%E5%AD%A6%E4%B9%A0%E6%B5%81%E7%A8%8B/">Stata学习流程</a></p><p class="categories"><a href="/categories/Stata%E5%AD%A6%E4%B9%A0%E4%B8%93%E6%A0%8F/">Stata学习专栏</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-07-06T13:05:56.000Z">2024-07-06</time></p><p class="title"><a href="/2024/07/06/11-%E7%9C%81%E4%BB%BD%E5%90%8D%E7%A7%B0%E8%BD%AC%E6%8D%A2/">Stata 省份名称转换/标准化命令</a></p><p class="categories"><a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">编程学习</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-07-06T07:08:56.000Z">2024-07-06</time></p><p class="title"><a href="/2024/07/06/10-%E5%9B%9E%E5%BD%92%E4%BA%A4%E4%BA%92%E9%A1%B9%E7%9A%84%E8%A7%A3%E8%AF%BB/">回归交互项的解读</a></p><p class="categories"><a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">编程学习</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-06-20T05:46:00.000Z">2024-06-20</time></p><p class="title"><a href="/2024/06/20/9-Stata%20%E5%A4%96%E9%83%A8%E5%91%BD%E4%BB%A4%E5%AE%89%E8%A3%85/">【置顶】Stata 外部命令安装</a></p><p class="categories"><a href="/categories/%E7%BD%91%E9%A1%B5%E8%AE%BE%E8%AE%A1/">网页设计</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-05-29T16:18:22.000Z">2024-05-30</time></p><p class="title"><a href="/2024/05/30/8-GitHub%E5%8A%A0%E9%80%9F%E5%92%8C%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA%E6%96%B9%E6%B3%95/">【置顶】GitHub加速和图片显示方法</a></p><p class="categories"><a href="/categories/%E7%BD%91%E9%A1%B5%E8%AE%BE%E8%AE%A1/">网页设计</a></p></div></article></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/assets/bar.png" alt="CodeFox" height="28"></a><p class="is-size-7"><span>&copy; 2024 CodeFox</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/codefoxs/codefoxs.github.io"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/javascript" id="MathJax-script" async>MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      chtml: {
+        matchFontHeight: false
+      }
+    };</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

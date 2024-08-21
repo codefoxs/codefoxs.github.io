@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Permutation test 和 Oster test 的 Stata 实现 - CodeFox</title><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#95c2e1"><meta name="application-name" content="CodeFox"><meta name="msapplication-TileImage" content="/assets/favo.png"><meta name="msapplication-TileColor" content="#95c2e1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CodeFox"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="置换检验和 Oster test 的 Stata 实现"><meta property="og:type" content="blog"><meta property="og:title" content="CodeFox"><meta property="og:url" content="https://codefoxs.github.io/"><meta property="og:site_name" content="CodeFox"><meta property="og:description" content="置换检验和 Oster test 的 Stata 实现"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281825920.png"><meta property="article:published_time" content="2022-05-13T07:58:00.000Z"><meta property="article:modified_time" content="2024-06-05T06:47:27.199Z"><meta property="article:author" content="CodeFox"><meta property="article:tag" content="Stata"><meta property="article:tag" content="计量经济学"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281825920.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://codefoxs.github.io/2022/05/13/5-permutation_oster/"},"headline":"Permutation test 和 Oster test 的 Stata 实现","image":["https://raw.githubusercontent.com/codefoxs/picgo/main/202405281825920.png"],"datePublished":"2022-05-13T07:58:00.000Z","dateModified":"2024-06-05T06:47:27.199Z","author":{"@type":"Person","name":"CodeFox"},"publisher":{"@type":"Organization","name":"CodeFox","logo":{"@type":"ImageObject","url":"https://codefoxs.github.io/assets/bar.png"}},"description":"置换检验和 Oster test 的 Stata 实现"}</script><link rel="canonical" href="https://codefoxs.github.io/2022/05/13/5-permutation_oster/"><link rel="alternate" href="/atom.xml" title="CodeFox" type="application/atom+xml"><link rel="icon" href="/assets/favo.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.2.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/assets/bar.png" alt="CodeFox" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">所有文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/essay">随笔</a><a class="navbar-item" href="/stata">Stata</a><a class="navbar-item" href="/about">关于我</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-6-widescreen"><div class="card"><div class="card-image"><span class="image is-7by3"><img class="fill" src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281825920.png" alt="Permutation test 和 Oster test 的 Stata 实现"></span></div><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-05-13T07:58:00.000Z" title="2022/5/13 15:58:00">2022-05-13</time>发表</span><span class="level-item"><time dateTime="2024-06-05T06:47:27.199Z" title="2024/6/5 14:47:27">2024-06-05</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">编程学习</a></span><span class="level-item">13 分钟读完 (大约2013个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">Permutation test 和 Oster test 的 Stata 实现</h1><div class="content"><blockquote>
+<p>置换检验和 Oster test 的 Stata 实现</p>
+</blockquote>
+<span id="more"></span>
+
+<p>后文用的模型均为：<br>$$<br>y_{it} &#x3D; \beta_0 + \beta_1x_{it}+\beta’ controls_{it} + \mu_i + \lambda_t +  \epsilon_{it}<br>$$<br>内生性问题主要包括<strong>遗漏变量、反向因果还有选择性偏误</strong>，第一个问题可以通过增加更多变量解决，比如引入其他层面的固定效应，第二个反向因果问题可以通过工具变量法等方法解决，第三个选择性偏差包括样本选择偏误和自选择偏误，前者可以通过 PSM-DID 等方法解决，后者可以通过Heckman 2sls 等方法解决。本文介绍的Permutation test 和 Oster test 是从另外一个视角去探讨<strong>遗漏变量</strong>内生性问题，尤其是在找不到工具变量和遗漏变量不可观测、不可分离的时候较为有效。</p>
+<h2 id="1-Permutation-test-Randomization-test-置换检验"><a href="#1-Permutation-test-Randomization-test-置换检验" class="headerlink" title="1 Permutation test &#x2F; Randomization test &#x2F; 置换检验"></a>1 Permutation test &#x2F; Randomization test &#x2F; 置换检验</h2><blockquote>
+<p>排除共存事件的影响，比如在做 DID 的时候，有些其他事件冲击可能与我们所关心的事件是同时发生的，通过置换检验一定程度上可以排除这些共存事件的干扰。</p>
+</blockquote>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">reg</span> y x age size soe i.industry i.year, r</span><br></pre></td></tr></table></figure>
+
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281825299.png" alt="基准回归结果" style="zoom:100%;"></center>
+
+<p>接下来的是对 $x$ 进行 permute 500 次【命令中的 permute x 和 option 里面的 reps(500) 】，每次都是对同一家公司不同年份进行 permute 【option 里面的 strata(code)】，这样就不会把 A 公司的数据给了 B 公司（不然就搞得和安慰剂检验差不多了）。最终的目的是对 x 的系数进行估计【命令中的 beta&#x3D;_b[x] ，意思就是把 x 的系数赋值给 beta 这个变量名，其实改成别的或者不加也行】，冒号后面是基准模型。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">permute</span> x beta=_b[x], reps(500) strata(code):<span class="keyword">reg</span> y x age size soe, r</span><br></pre></td></tr></table></figure>
+
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281825920.png" alt="置换检验结果" style="zoom:100%;"></center>
+
+<p>图中的 -0.0066581 就是前面基准回归的系数，由于这个系数是负的，所以我们看看这 500 次里面有多少次是比这个系数更负，也就是 lower 后面那个数字 0 ，意思就是 500 次 permute 的结果，$x$ 的系数全都大于 -0.0066581，经验 $p$ 值为后面的 0.0000（计算方法是 p &#x3D; c &#x2F; n），说明我们的结果是稳健的，不太可能有共存的事件影响我们的估计结果。</p>
+<p><em>tips：如果原本的系数是正的就看下面的 upper 那行</em></p>
+<p>此外，如果做的是 DID 的话，比如方程是<br>$$<br>y_{it} &#x3D; \beta_0 + \beta_1treat_{i}\times post_t+\beta’ controls_{it} + \mu_i + \lambda_t +  \epsilon_{it}<br>$$<br>那就可以把命令改成对 $treat$ 进行 permute，</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">permute</span> treat beta=_b[c.treat#c.<span class="keyword">post</span>], reps(500) strata(code):<span class="keyword">reg</span> y c.treat#c.<span class="keyword">post</span> age size soe i.industry i.year, r</span><br></pre></td></tr></table></figure>
+
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281826220.png" alt="置换检验结果" style="zoom:100%;"></center>
+
+<p>经验 $p$ 值 0.3080 （154 &#x2F; 500），500 次 permutation 里面就有 154 次比 -0.0268812 要小，所以置换检验没有通过，共存事件的影响不可忽视。</p>
+<h2 id="2-Oster-test（2019）"><a href="#2-Oster-test（2019）" class="headerlink" title="2 Oster test（2019）"></a>2 Oster test（2019）</h2><blockquote>
+<p>其实这个检验目前还没有明确的名字，我姑且叫它 Oster test 吧。这个检验是用来检验遗漏变量的影响，比如，未观测到的因素需要比已观测到的因素作用大多少才能够对原估计结果产生显著影响（使 <em>β</em> &#x3D; 0 或者 <em>β</em> 逆转为正数[前面提到的结果是负数]），所以这个办法本质上就是用来说明<strong>遗漏变量不会影响我们的主要结果</strong>。</p>
+</blockquote>
+<h3 id="2-1-是否存在和已经观测到的变量同等重要的未观测到的变量对我们的估计结果产生影响？"><a href="#2-1-是否存在和已经观测到的变量同等重要的未观测到的变量对我们的估计结果产生影响？" class="headerlink" title="2.1 是否存在和已经观测到的变量同等重要的未观测到的变量对我们的估计结果产生影响？"></a>2.1 是否存在和已经观测到的变量同等重要的未观测到的变量对我们的估计结果产生影响？</h3><blockquote>
+<p>更新：建议使用 github 上提供的 psacalc2，支持 reghdfe 命令后果运行，使用方法不变</p>
+<p>链接 &#x3D;&#x3D;&gt; <a target="_blank" rel="noopener" href="https://github.com/ArthurHowardMorris/psacalc_supports_reghdfe/tree/5b7ca6b1178ae4c4032f109e0514d5e6ca728e59">psacalc with support for reghdfe</a></p>
+</blockquote>
+<p>Oster test 分为两个部分，首先第一个部分是用来检验是否存在和已经观测到的变量（包括固定效应）同等重要的未观测到的变量对我们的估计结果产生影响？</p>
+<p>按照 Oster 原文以及一些顶刊的做法，通过 $R^2$ 和 $\delta$ 对“真实的” $\beta$ 区间（true $\beta$）进行复原。首先给出两个假设，</p>
+<ol>
+<li>引入未观测到的因素后 $R^2$ 会变为原来 1.3 倍（这个 1.3 是 Oster 的建议值）；</li>
+<li>未观测到的变量对被解释变量的影响和已观测到的变量（包括固定效应）的影响至少相同（即 $\delta &#x3D; 1$ ，也是个建议值）</li>
+</ol>
+<p>用到的 Stata 包是 psacalc，执行的命令为</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">reg</span> y x age big4 dual assets debts top institude soe, r level(99.5) <span class="comment">// 置信区间设为 99.5% ，后面有用</span></span><br><span class="line"><span class="keyword">global</span> r = <span class="built_in">e</span>(r2) * 1.3 <span class="comment">// 设为 1.3 倍</span></span><br><span class="line">psacalc beta x, delta(1) rmax(<span class="variable">$r</span>)</span><br></pre></td></tr></table></figure>
+
+<p>首先是回归结果，记住这个 99.5 % 置信区间 [-0.0092741, -0.0052753]，</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281826649.png" alt="回归结果"></center>
+
+<p>psacalc beta 的输出结果如下，</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281827794.png" alt="beta 检验"></center>
+
+<p>没有引入控制变量和固定效应前，回归系数为 -0.00727 ，对应的 $R^2$ 为 0.004，控制后分别变为 -0.007270（没变，好家伙，为了区分多加个 0） 和 0.009，上面有个 beta 值为 -0.00728，</p>
+<p>那么上面汇报的 beta 值与<strong>控制后的系数</strong>组成了“真实的” $\beta$ 区间 [-0.00728, -0.007270]，<strong>该区间不包含 0 值</strong>，且落于前面提到的 99.5% 置信区间 [-0.0092741, -0.0052753] 内。这个结果说明了不太可能与已经观测到的变量（包括固定效应）同等重要的未观测到的变量对我们的结果产生显著影响。（使得 $\beta$ 失效等于 0 或令其逆转为正）</p>
+<h3 id="2-2-未观测到的变量至少要产生多少倍于已经观测到的变量的影响才能够使得-β-0？"><a href="#2-2-未观测到的变量至少要产生多少倍于已经观测到的变量的影响才能够使得-β-0？" class="headerlink" title="2.2 未观测到的变量至少要产生多少倍于已经观测到的变量的影响才能够使得 β &#x3D; 0？"></a>2.2 未观测到的变量至少要产生多少倍于已经观测到的变量的影响才能够使得 <em>β</em> &#x3D; 0？</h3><p>第二个检验换了一个角度去思考，假设</p>
+<ol>
+<li>引入未观测到的因素后 $R^2$ 会变为原来 1.3 倍（这个 1.3 是 Oster 的建议值）；</li>
+<li>$\beta &#x3D; 0$</li>
+</ol>
+<p>执行的命令为</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psacalc delta x, beta(0) rmax(<span class="variable">$r</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果输出如下，</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281827374.png" alt="delta 检验"></center>
+
+<p>可以发现上面的 delta 值为 24.20817 ，也就是说，未观测到的变量产生的影响至少24倍于已经观测到的变量才能够使得 <em>β</em> &#x3D; 0，该结果表明不太可能存在未观测到的变量对我们的结果产生显著影响。（存在24倍影响的未观测变量是不太可能的）</p>
+<p><strong>根据知乎评论区朋友提供的资料，下面这个链接认为 delta 小于 0 时，只要小于 -1 也是可以的。</strong></p>
+<p>&#x3D;&#x3D;&gt; <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/614202441?utm_campaign=shareopn&utm_medium=social&utm_oi=655128787092770816&utm_psn=1635793284877561856&utm_source=wechat_session">知乎文章</a></p>
+<p><strong>我在其他的论文中发现 delta 其实小于 0 都是可以的，说明加入遗漏变量后，系数会更偏向于基准的方向。</strong></p>
+<h2 id="3-怎么汇报结果？"><a href="#3-怎么汇报结果？" class="headerlink" title="3 怎么汇报结果？"></a>3 怎么汇报结果？</h2><p>那么 Oster test 的结果应该如何汇报呢？我找了下文献，看到有这两种汇报方法，</p>
+<ul>
+<li>Donohoe, M.P., Jang, H. and Lisowsky, P., 2022. Competitive externalities of tax cuts. <em>Journal of Accounting Research</em>, 60(1), pp.201-259.</li>
+</ul>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281827104.png" alt="示例"></center>
+
+<ul>
+<li>Aubery, F. and Sahn, D.E., 2021. Cognitive achievement production in Madagascar: a value-added model approach. <em>Education Economics</em>, 29(6), pp.670-699.</li>
+</ul>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281828594.png" alt="示例"></center>
+
+<p>顺带加个置换检验的展示图，</p>
+<ul>
+<li>Donohoe, M.P., Jang, H. and Lisowsky, P., 2022. Competitive externalities of tax cuts. <em>Journal of Accounting Research</em>, 60(1), pp.201-259.</li>
+</ul>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/202405281828800.png" alt="示例"></center>
+
+<p>如有不对还请指出！</p>
+<h2 id="4-参考资料"><a href="#4-参考资料" class="headerlink" title="4 参考资料"></a>4 参考资料</h2><div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+    Aubery, F. and Sahn, D.E., 2021. Cognitive achievement production in Madagascar: a value-added model approach. Education Economics, 29(6), pp.670-699.
+</div>
+<div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+    Donohoe, M.P., Jang, H. and Lisowsky, P., 2022. Competitive externalities of tax cuts. Journal of Accounting Research, 60(1), pp.201-259.
+</div>
+<div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+    Oster, E., 2019. Unobservable selection and coefficient stability: Theory and evidence. Journal of Business & Economic Statistics, 37(2), pp.187-204.
+</div>
+<div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+    无工具变量解决遗漏变量内生性问题的psacalc方法及stata命令 - 经管代码库 - 经管之家(原人大经济论坛) https://bbs.pinggu.org/thread-10977856-1-1.html
+</div>
+<div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+    前沿: 解决内生性问题的无工具变量推断法 https://mp.weixin.qq.com/s/o9bqdOSkqwsV_9QSrl_OUA
+</div>
+<div style="text-indent: -2em; padding-left: 2em; text-align: justify; word-break:break-all">
+   什么是经济学中的自选择问题？https://www.zhihu.com/question/311199969
+</div>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Permutation test 和 Oster test 的 Stata 实现</p><p><a href="https://codefoxs.github.io/2022/05/13/5-permutation_oster/">https://codefoxs.github.io/2022/05/13/5-permutation_oster/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>CodeFox</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-05-13</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2024-06-05</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Stata/">Stata</a><a class="link-muted mr-2" rel="tag" href="/tags/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6/">计量经济学</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2023/01/06/4-%E5%85%AC%E5%8F%B8%E9%87%91%E8%9E%8D%E5%B8%B8%E7%94%A8Stata%E4%BB%A3%E7%A0%81/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">公司金融常用Stata代码</span></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="SOHUCS" sid="2022/05/13/5-permutation_oster/"></div><script charset="utf-8" src="https://changyan.sohu.com/upload/changyan.js"></script><script>window.changyan.api.config({appid: 'cyxiA9lvU',conf: 'prod_25f08bcf7cc29ea8bf2d089bf60b1687'});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/assets/favo.png" alt="CodeFox"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">CodeFox</p><p class="is-size-6 is-block">追风赶月莫停留，平芜尽处是春山</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>广州 中国</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">13</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">7</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/codefoxs" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/codefoxs"><img src="/image/github.svg" style="height: 20px;width: 20px;"></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="知乎" href="https://www.zhihu.com/people/Keynes"><img src="/image/知乎.svg" style="height: 20px;width: 20px;"></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://lxxcandy.github.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">我的学术搭子😚</span></span><span class="level-right"><span class="level-item tag">lxxcandy.github.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Stata%E5%AD%A6%E4%B9%A0%E4%B8%93%E6%A0%8F/"><span class="level-start"><span class="level-item">Stata学习专栏</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%A4%BE%E7%A7%91%E5%9F%BA%E9%87%91/"><span class="level-start"><span class="level-item">社科基金</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">编程学习</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BD%91%E9%A1%B5%E8%AE%BE%E8%AE%A1/"><span class="level-start"><span class="level-item">网页设计</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/GitHub/"><span class="tag">GitHub</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Stata/"><span class="tag">Stata</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%90%9C%E7%B4%A2%E7%BD%91%E7%AB%99/"><span class="tag">搜索网站</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E5%AD%A6/"><span class="tag">数学</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%A4%BE%E7%A7%91%E5%9F%BA%E9%87%91/"><span class="tag">社科基金</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E5%8A%A0%E9%80%9F/"><span class="tag">网络加速</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6/"><span class="tag">计量经济学</span><span class="tag">9</span></a></div></div></div></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2024/08/"><span class="level-start"><span class="level-item">八月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/07/"><span class="level-start"><span class="level-item">七月 2024</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/06/"><span class="level-start"><span class="level-item">六月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/05/"><span class="level-start"><span class="level-item">五月 2024</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/04/"><span class="level-start"><span class="level-item">四月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/01/"><span class="level-start"><span class="level-item">一月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/12/"><span class="level-start"><span class="level-item">十二月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/05/"><span class="level-start"><span class="level-item">五月 2022</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="column-right-shadow is-hidden-widescreen is-sticky"></div></div><div class="column column-right is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-Permutation-test-Randomization-test-置换检验"><span class="level-left"><span class="level-item">1 Permutation test / Randomization test / 置换检验</span></span></a></li><li><a class="level is-mobile" href="#2-Oster-test（2019）"><span class="level-left"><span class="level-item">2 Oster test（2019）</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#2-1-是否存在和已经观测到的变量同等重要的未观测到的变量对我们的估计结果产生影响？"><span class="level-left"><span class="level-item">2.1 是否存在和已经观测到的变量同等重要的未观测到的变量对我们的估计结果产生影响？</span></span></a></li><li><a class="level is-mobile" href="#2-2-未观测到的变量至少要产生多少倍于已经观测到的变量的影响才能够使得-β-0？"><span class="level-left"><span class="level-item">2.2 未观测到的变量至少要产生多少倍于已经观测到的变量的影响才能够使得 β = 0？</span></span></a></li></ul></li><li><a class="level is-mobile" href="#3-怎么汇报结果？"><span class="level-left"><span class="level-item">3 怎么汇报结果？</span></span></a></li><li><a class="level is-mobile" href="#4-参考资料"><span class="level-left"><span class="level-item">4 参考资料</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-08-21T13:05:56.000Z">2024-08-21</time></p><p class="title"><a href="/2024/08/21/12-Stata%E5%AD%A6%E4%B9%A0%E6%B5%81%E7%A8%8B/">Stata学习流程</a></p><p class="categories"><a href="/categories/Stata%E5%AD%A6%E4%B9%A0%E4%B8%93%E6%A0%8F/">Stata学习专栏</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-07-06T13:05:56.000Z">2024-07-06</time></p><p class="title"><a href="/2024/07/06/11-%E7%9C%81%E4%BB%BD%E5%90%8D%E7%A7%B0%E8%BD%AC%E6%8D%A2/">Stata 省份名称转换/标准化命令</a></p><p class="categories"><a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">编程学习</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-07-06T07:08:56.000Z">2024-07-06</time></p><p class="title"><a href="/2024/07/06/10-%E5%9B%9E%E5%BD%92%E4%BA%A4%E4%BA%92%E9%A1%B9%E7%9A%84%E8%A7%A3%E8%AF%BB/">回归交互项的解读</a></p><p class="categories"><a href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">编程学习</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-06-20T05:46:00.000Z">2024-06-20</time></p><p class="title"><a href="/2024/06/20/9-Stata%20%E5%A4%96%E9%83%A8%E5%91%BD%E4%BB%A4%E5%AE%89%E8%A3%85/">【置顶】Stata 外部命令安装</a></p><p class="categories"><a href="/categories/%E7%BD%91%E9%A1%B5%E8%AE%BE%E8%AE%A1/">网页设计</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2024-05-29T16:18:22.000Z">2024-05-30</time></p><p class="title"><a href="/2024/05/30/8-GitHub%E5%8A%A0%E9%80%9F%E5%92%8C%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA%E6%96%B9%E6%B3%95/">【置顶】GitHub加速和图片显示方法</a></p><p class="categories"><a href="/categories/%E7%BD%91%E9%A1%B5%E8%AE%BE%E8%AE%A1/">网页设计</a></p></div></article></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/assets/bar.png" alt="CodeFox" height="28"></a><p class="is-size-7"><span>&copy; 2024 CodeFox</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/codefoxs/codefoxs.github.io"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/javascript" id="MathJax-script" async>MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      chtml: {
+        matchFontHeight: false
+      }
+    };</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
