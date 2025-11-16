@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>WRDS 实战 - CCM 的下载与预处理 - CodeFox</title><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#95c2e1"><meta name="application-name" content="CodeFox"><meta name="msapplication-TileImage" content="/assets/favo.png"><meta name="msapplication-TileColor" content="#95c2e1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="CodeFox"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="WRDS 中 CCM 的下载与预处理"><meta property="og:type" content="blog"><meta property="og:title" content="CodeFox"><meta property="og:url" content="https://codefoxs.github.io/"><meta property="og:site_name" content="CodeFox"><meta property="og:description" content="WRDS 中 CCM 的下载与预处理"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010328750.png"><meta property="article:published_time" content="2025-11-16T14:10:00.000Z"><meta property="article:modified_time" content="2025-11-16T14:11:18.972Z"><meta property="article:author" content="CodeFox"><meta property="article:tag" content="WRDS"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010328750.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://codefoxs.github.io/2025/11/17/20-CCM/"},"headline":"WRDS 实战 - CCM 的下载与预处理","image":["https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010328750.png"],"datePublished":"2025-11-16T14:10:00.000Z","dateModified":"2025-11-16T14:11:18.972Z","author":{"@type":"Person","name":"CodeFox"},"publisher":{"@type":"Organization","name":"CodeFox","logo":{"@type":"ImageObject","url":"https://codefoxs.github.io/assets/bar.png"}},"description":"WRDS 中 CCM 的下载与预处理"}</script><link rel="canonical" href="https://codefoxs.github.io/2025/11/17/20-CCM/"><link rel="alternate" href="/atom.xml" title="CodeFox" type="application/atom+xml"><link rel="icon" href="/assets/favo.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.2.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/assets/bar.png" alt="CodeFox" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives">所有文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于我</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-6-widescreen"><div class="card"><div class="card-image"><span class="image is-7by3"><img class="fill" src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010328750.png" alt="WRDS 实战 - CCM 的下载与预处理"></span></div><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2025-11-16T14:10:00.000Z" title="2025/11/17 01:10:00">2025-11-17</time>发表</span><span class="level-item"><time dateTime="2025-11-16T14:11:18.972Z" title="2025/11/17 01:11:18">2025-11-17</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E5%85%AC%E5%8F%B8%E9%87%91%E8%9E%8D/">公司金融</a></span><span class="level-item">18 分钟读完 (大约2719个字)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">WRDS 实战 - CCM 的下载与预处理</h1><div class="content"><blockquote>
+<p>WRDS 中 CCM 的下载与预处理</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="0-数据库简介"><a href="#0-数据库简介" class="headerlink" title="0 数据库简介"></a>0 数据库简介</h2><p>Compustat&#x2F;CRSP 合并数据库，一般被简称为 CCM，是美国上市公司实证研究中最重要的数据库之一。相当于国内 CSMAR 的资产负债表+利润表+现金流量表+股票信息。</p>
+<p>不建议使用单独的 Compustat 数据库，因为信息没有这里的全。</p>
+<h2 id="1-获取途径"><a href="#1-获取途径" class="headerlink" title="1 获取途径"></a>1 获取途径</h2><p>通过 WRDS 进行获取，登录后可以在标签栏快速进入（注意：合并数据在 CRSP 里面而不是 Compustat - Capital IQ 里面</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010305261.png"></center>
+
+<p>不出意外的话，你可以找到</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010328750.png"></center>
+
+<p>根据需要选择年度或者季度数据，这里以年度数据作为案例</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010338710.png"></center>
+
+<p>恭喜你成功进入 CCM</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010349784.png"></center>
+
+<h2 id="2-数据筛选"><a href="#2-数据筛选" class="headerlink" title="2 数据筛选"></a>2 数据筛选</h2><p>WRDS 提供了一套相当复杂的数据筛选流程，接下来我一步步解释</p>
+<h3 id="2-1-选择日期范围"><a href="#2-1-选择日期范围" class="headerlink" title="2.1 选择日期范围"></a>2.1 选择日期范围</h3><center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010408793.png" alt="会计年度 fyear"></center>
+
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010416934.png" alt="数据日期 datadate"></center>
+
+<p>WRDS 提供了两种日期选择：会计年度（fiscal year）和数据日期（datadate）。</p>
+<p>会计年度（fiscal year）和日历年度（calendar year）不一定相同，如果企业选择每年的12月份结束自己的会计年度，那么二者就相同；如果企业打算明年三月、六月等时间出报表的时候再结束，那么而这就不同了。在实证研究中，如果控制年份固定效应，一般是控制会计年度。因为企业可能会更改自己的会计期间结束时间，我们只能保证每个“企业-会计年度”有唯一观测，但是不能保证“企业-日历年度”是唯一的。</p>
+<p>数据日期（datadate），简单来说就是报表发布的真实时间（年-月），是常用的 merge variable。事实上，CRSP 的数据也是通过 datadate 合并到每个企业的会计年度上的。</p>
+<h3 id="2-2-选择公司代码"><a href="#2-2-选择公司代码" class="headerlink" title="2.2 选择公司代码"></a>2.2 选择公司代码</h3><center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010500091.png"></center>
+
+<p>上面的 Autocomplete 是询问你希望出现的企业 id 形式，因为国外企业不像国内上市公司，拿着一个股票代码就不会变了，而且几乎每个数据库都会有自己的一套 id，这也就导致了美国&#x2F;全球公司金融实证的难度比中国公司金融难度更高。</p>
+<p>优先级最高的两个 id 是：<br><strong>gvkey</strong>：The Global Company Key。Compustat 数据库给每个公司的编码，不会随着时间发生变化<br><strong>cik</strong>：Central Index Key。美国证券交易委员会（SEC）分配给向其提交文件的公司和个人的唯一识别号码，用以在SEC数据库中识别和跟踪实体提交的文件，如年报（10-K）和季度报（10-Q）等披露信息。，也不会随着时间变化</p>
+<p>其次是：<br><strong>permno</strong>：CRSP 数据库给每个证券赋予的编码，也是唯一不会变的。但是为什么优先级不如上面两个呢？因为一家公司可以对应多个证券。<br><strong>permco</strong>：CRSP 数据库给每个证券赋予的编码，也是唯一不会变的，和 permno 不同的是，permco 只会唯一对应一家公司。<br>所以，如果要通过 CRSP 的股票日&#x2F;月数据计算 beta、volatility、return等数据，建议采用 permno 而不是 permco，因为这些数据需要以证券为单位，而 permco 可能对应多个证券，在数据库中同一天&#x2F;月会出现多个不同的收益率。</p>
+<p>再者是：<br><strong>CUSIP</strong>：Committee on Uniform Securities Identification Procedures。美国和加拿大金融证券的统一识别码，由 CUSIP Global Services（CGS）负责分配，包含9 位字符（前 6 + 后 2 + 校验位 1）。<br>需要重点注意的是，CUSIP会随着时间发生变化，也就是说一家公司&#x2F;证券的CUSIP在不同年份可能不同，甚至可能出现不同公司在不同时间使用了同一个CUSIP，所以几乎是没有人采用 CUSIP 进行数据合并。<br>最后是：<br><strong>Ticker</strong>：最坑爹的 id，证券在交易所挂牌时使用的交易代码，交易所给投资者提供的证券简称。比如：Apple → AAPL，Microsoft → MSFT，Tesla → TSLA。这玩意也会随着时间发生变化，公司退市再上市后，Ticker可能相同也可能不同，公司改名也会导致Ticker发生变化。比如Facebook变成Meta，代码从 FB 变成 META介绍完后，我们需要选择代码的范围，可以自己导入 txt 确定你的研究代码范围，也可以直接选择整个数据，一般是选择整个数据库。</p>
+<h3 id="2-3-变量筛选"><a href="#2-3-变量筛选" class="headerlink" title="2.3 变量筛选"></a>2.3 变量筛选</h3><center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010512108.png"></center>
+
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010522286.png" alt="使用默认即可"></center>
+
+<p>这里进行初步的变量筛选。<br>第一条 Consolidation Level 代表选择的报表层级，和 CSMAR 一样，有合并报表（C）、母公司报表（N）等<br>第二条 Industry Format 代表选用的报表格式，大部分公司都选择第一个，金融业的企业可能会选择第二种（注意，这里并没有剔除金融业企业，只是报表格式问题而已）<br>第三条 Data Format 代表选择的报表精简程度，一般选择第一种 STD，标准化的报表<br>第四条 Population Source，D代表样本包含美国和加拿大的上市公司，I代表纳入国际企业<br>第五条 Currency，计价方式，美元或者加元，全选，因为去掉 CAD 会导致加拿大上市公司的观测丢失<br>第六条 Company Status，公司状态，这里全选，不管上市还是退市，先留着<br>最后那个默认就好，其实就是排除掉一些不合理的观测</p>
+<h3 id="2-4-变量选择"><a href="#2-4-变量选择" class="headerlink" title="2.4 变量选择"></a>2.4 变量选择</h3><center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010545099.png"></center>
+
+<p>最上面的三个选项是问你数据来源于哪里？是报表中的数据项目，还是脚注和数据代码？默认就好<br>变量可以一个个挑选了，几百个变量看着太累，我一般是全选下来，双击 All 就全过来了</p>
+<h3 id="2-5-导出格式"><a href="#2-5-导出格式" class="headerlink" title="2.5 导出格式"></a>2.5 导出格式</h3><center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010553745.png"></center>
+
+<h2 id="3-数据下载"><a href="#3-数据下载" class="headerlink" title="3 数据下载"></a>3 数据下载</h2><p>点击 submit 后，经过漫长等待和网页多次刷新，你会得到以下页面，点击下载即可</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010605170.png"></center>
+
+<h2 id="4-数据预处理"><a href="#4-数据预处理" class="headerlink" title="4 数据预处理"></a>4 数据预处理</h2><p>这个数据并不是打开即用的，我们简单测试发现原始数据有以下问题：</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010616263.png"></center>
+
+<p>首先解决第一个问题，fyear 缺失。观察这 10 个缺失值发现，我们可以直接用 datadate 的年份进行填充</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010625019.png"></center>
+
+<p>填充后就没有缺失值了</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010633404.png"></center>
+
+<p>第二个问题，重复问题，我们只要选择最新的观测即可</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010639852.png"></center>
+
+<p>然后，我们需要把一些能转化成数值的字符数据进行转化</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010647930.png"></center>
+
+<p>最后，压缩和保存数据（减小内存）</p>
+<center><img src="https://raw.githubusercontent.com/codefoxs/picgo/main/20251117010657366.png"></center>
+
+<p>连起来就是</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="string">&quot;CCM-raw.dta&quot;</span>, <span class="keyword">clear</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ren</span> GVKEY gvkey</span><br><span class="line"><span class="keyword">order</span> gvkey fyear datadate</span><br><span class="line"></span><br><span class="line"><span class="keyword">replace</span> fyear = <span class="built_in">year</span>(datadate) <span class="keyword">if</span> fyear == .</span><br><span class="line"><span class="comment">// 建议使用更稳妥的 replace fyear = cond(fyr &lt;= 6, year(datadate)-1, year(datadate)) if fyear == .</span></span><br><span class="line"><span class="comment">// 因为会计结束月份如果在前半年一般是前一年的会计年度</span></span><br><span class="line"><span class="keyword">gsort</span> gvkey fyear -datadate</span><br><span class="line"><span class="keyword">duplicates</span> <span class="keyword">drop</span> gvkey fyear, force</span><br><span class="line"></span><br><span class="line"><span class="keyword">destring</span> *, <span class="keyword">replace</span></span><br><span class="line"><span class="keyword">compress</span></span><br><span class="line"><span class="keyword">save</span> <span class="string">&quot;CCM-predo.dta&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-常见变量"><a href="#5-常见变量" class="headerlink" title="5 常见变量"></a>5 常见变量</h2><table>
+<thead>
+<tr>
+<th align="left">变量名</th>
+<th align="left">数据标签</th>
+<th align="left">中文含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">gvkey</td>
+<td align="left">Standard and Poor’s Identifier</td>
+<td align="left">标普标识符</td>
+</tr>
+<tr>
+<td align="left">cik</td>
+<td align="left">CIK Number</td>
+<td align="left">SEC 提供的公司标识</td>
+</tr>
+<tr>
+<td align="left">LPERMNO</td>
+<td align="left">Historical CRSP PERMNO Link to COMPUSTAT Record</td>
+<td align="left">CRSP 的公司标识（permno）</td>
+</tr>
+<tr>
+<td align="left">LPERMCO</td>
+<td align="left">Historical CRSP PERMCO Link to COMPUSTAT Record</td>
+<td align="left">CRSP 的公司标识（permco），但是一个 permno 可能对应多个 permco</td>
+</tr>
+<tr>
+<td align="left">cusip</td>
+<td align="left">CUSIP</td>
+<td align="left">美国和加拿大金融证券统一识别码，共 9 位</td>
+</tr>
+<tr>
+<td align="left">fyear</td>
+<td align="left">Data Year - Fiscal</td>
+<td align="left">会计年度</td>
+</tr>
+<tr>
+<td align="left">fyr</td>
+<td align="left">Fiscal Year-end Month</td>
+<td align="left">会计年度结束月份</td>
+</tr>
+<tr>
+<td align="left">datadate</td>
+<td align="left">Data Date</td>
+<td align="left">数据日期，其实就是 日历年 + fyr + 当月最后一天</td>
+</tr>
+<tr>
+<td align="left">at</td>
+<td align="left">Assets - Total</td>
+<td align="left">资产总计</td>
+</tr>
+<tr>
+<td align="left">lt</td>
+<td align="left">Liabilities - Total</td>
+<td align="left">债务总计</td>
+</tr>
+<tr>
+<td align="left">act</td>
+<td align="left">Current Assets - Total</td>
+<td align="left">流动资产</td>
+</tr>
+<tr>
+<td align="left">lct</td>
+<td align="left">Current Liabilities - Total</td>
+<td align="left">流动债务</td>
+</tr>
+<tr>
+<td align="left">dlc</td>
+<td align="left">Debt in Current Liabilities - Total</td>
+<td align="left">短期负债（流动债务中含息的债务，debt 代表含息的债务，本文使用负债和债务区分二者）</td>
+</tr>
+<tr>
+<td align="left">dltt</td>
+<td align="left">Long-Term Debt - Total</td>
+<td align="left">长期负债</td>
+</tr>
+<tr>
+<td align="left">sale</td>
+<td align="left">Sales&#x2F;Turnover (Net)</td>
+<td align="left">净销售额（中国语境：营业收入）</td>
+</tr>
+<tr>
+<td align="left">revt</td>
+<td align="left">Revenue - Total</td>
+<td align="left">营业收入（和 sale 完全一样）</td>
+</tr>
+<tr>
+<td align="left">oiadp</td>
+<td align="left">Operating Income After Depreciation</td>
+<td align="left">息税前利润（营业利润减去折旧）</td>
+</tr>
+<tr>
+<td align="left">ebit</td>
+<td align="left">Earnings Before Interest and Taxes</td>
+<td align="left">息税前利润（和 oiadp 完全一致）</td>
+</tr>
+<tr>
+<td align="left">ib</td>
+<td align="left">Income Before Extraordinary Items</td>
+<td align="left">非常项目前收益（不建议用来计算 ROA，2015年被 US-GAAP 取消）</td>
+</tr>
+<tr>
+<td align="left">ni</td>
+<td align="left">Net Income (Loss)</td>
+<td align="left">净利润</td>
+</tr>
+<tr>
+<td align="left">ceq</td>
+<td align="left">Common&#x2F;Ordinary Equity - Total</td>
+<td align="left">普通股股东权益总额</td>
+</tr>
+<tr>
+<td align="left">che</td>
+<td align="left">Cash and Short-Term Investments</td>
+<td align="left">现金与短期投资</td>
+</tr>
+<tr>
+<td align="left">ch</td>
+<td align="left">Cash</td>
+<td align="left">现金持有</td>
+</tr>
+<tr>
+<td align="left">oancf</td>
+<td align="left">Operating Activities - Net Cash Flow</td>
+<td align="left">经营活动现金流净额</td>
+</tr>
+<tr>
+<td align="left">dp</td>
+<td align="left">Depreciation and Amortization</td>
+<td align="left">折旧和摊销</td>
+</tr>
+<tr>
+<td align="left">ppegt</td>
+<td align="left">Property, Plant and Equipment - Total (Gross)</td>
+<td align="left">固定资产总额</td>
+</tr>
+<tr>
+<td align="left">ppent</td>
+<td align="left">Property, Plant and Equipment - Total (Net)</td>
+<td align="left">固定资产净额</td>
+</tr>
+<tr>
+<td align="left">intan</td>
+<td align="left">Intangible Assets - Total</td>
+<td align="left">无形资产总额</td>
+</tr>
+<tr>
+<td align="left">dvc</td>
+<td align="left">Dividends Common&#x2F;Ordinary</td>
+<td align="left">现金股利</td>
+</tr>
+<tr>
+<td align="left">re</td>
+<td align="left">Retained Earnings</td>
+<td align="left">留存收益</td>
+</tr>
+<tr>
+<td align="left">csho</td>
+<td align="left">Common Shares Outstanding</td>
+<td align="left">流通中普通股股数</td>
+</tr>
+<tr>
+<td align="left">prcc_f</td>
+<td align="left">Price Close - Annual - Fiscal</td>
+<td align="left">会计年度结束时的股票收盘价</td>
+</tr>
+</tbody></table>
+<h2 id="6-常用指标"><a href="#6-常用指标" class="headerlink" title="6 常用指标"></a>6 常用指标</h2><blockquote>
+<p>这里我列出一些常见的财务指标</p>
+</blockquote>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">xtset</span> gvkey fyear</span><br><span class="line"></span><br><span class="line"><span class="keyword">gen</span> Size = <span class="built_in">ln</span>(at) <span class="comment">// 企业规模</span></span><br><span class="line"><span class="keyword">gen</span> MarketCap = <span class="built_in">ln</span>(prcc_f * csho) <span class="comment">// 公司市值规模</span></span><br><span class="line"><span class="keyword">bys</span> gvkey: <span class="keyword">egen</span> AGE = <span class="built_in">min</span>(fyear)</span><br><span class="line"><span class="keyword">replace</span> Age = fyear - AGE <span class="comment">// 企业年龄，因为 IPO 日期不全，一般研究采用数据最早在 Compustat 中出现的年份作为企业出生日</span></span><br><span class="line"><span class="keyword">gen</span> Lev = lt / at <span class="comment">// 总负债除以总资产</span></span><br><span class="line"><span class="keyword">gen</span> Lev_long = dltt / at <span class="comment">// 长期负债除以总资产</span></span><br><span class="line"><span class="keyword">gen</span> Book_lev = (dltt + dlc) / at <span class="comment">// 长期负债 + 短期负债 除以 总资产</span></span><br><span class="line"><span class="keyword">gen</span> ROA = ni / at <span class="comment">// net income 除以总资产（可以考虑滞后一期的总资产）</span></span><br><span class="line"><span class="keyword">gen</span> ROA2 = oiadp / at <span class="comment">// Operating Income After Depreciation 除以总资产</span></span><br><span class="line"><span class="keyword">gen</span> ROE = ni / ceq <span class="comment">// Net income 除以账面价值</span></span><br><span class="line"><span class="keyword">gen</span> ROE2 = oiadp / ceq <span class="comment">// Operating Income After Depreciation 除以账面价值</span></span><br><span class="line"><span class="keyword">gen</span> Sales_growth = sale / <span class="keyword">L</span>.sale - 1 <span class="comment">// sales 增长率</span></span><br><span class="line"><span class="keyword">gen</span> Assets_growth = at / <span class="keyword">L</span>.at - 1 <span class="comment">// 总资产增长率</span></span><br><span class="line"><span class="keyword">gen</span> MtoB = prcc_f * csho / ceq <span class="comment">// 市值账面比</span></span><br><span class="line"><span class="keyword">gen</span> Cash = che / at <span class="comment">// 现金及其等价物持有</span></span><br><span class="line"><span class="keyword">gen</span> Cash2 = ch / at <span class="comment">// 现金持有</span></span><br><span class="line"><span class="keyword">gen</span> Cachflow = (ibc + dp) / at <span class="comment">// 经营活动现金流</span></span><br><span class="line"><span class="keyword">gen</span> Cashflow_net = oancf / at <span class="comment">// 经营活动现金流净额</span></span><br><span class="line"><span class="keyword">gen</span> Intan_rate = intan / at <span class="comment">// 无形资产比例</span></span><br><span class="line"><span class="keyword">gen</span> Div = dvc / at <span class="comment">// 现金股利</span></span><br><span class="line"><span class="keyword">gen</span> DDIV = (Div &gt; 0) <span class="comment">// 是否支付现金股利，建议先把 DIV 缺失值替换为 0</span></span><br><span class="line"><span class="keyword">gen</span> Zscore = 3.3 * (ebit / at) + 0.99 * (sale / at) + 0.6 * (csho * prcc_f / lt) + 1.2 * (act / at) + 1.4 * (re / at) <span class="comment">// Altman Z</span></span><br><span class="line"><span class="keyword">gen</span> PPE = ppegt / at <span class="comment">// 固定资产 gross</span></span><br><span class="line"><span class="keyword">gen</span> PPE_net = ppent / at <span class="comment">// 固定资产净额</span></span><br></pre></td></tr></table></figure>
+
+</div><div class="article-licensing box"><div class="licensing-title"><p>WRDS 实战 - CCM 的下载与预处理</p><p><a href="https://codefoxs.github.io/2025/11/17/20-CCM/">https://codefoxs.github.io/2025/11/17/20-CCM/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>CodeFox</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-11-17</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-11-17</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/WRDS/">WRDS</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2025/11/16/19-SAS-learning/"><span class="level-item">The little SAS book 学习笔记 - 导入数据到 SAS</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="SOHUCS" sid="2025/11/17/20-CCM/"></div><script charset="utf-8" src="https://changyan.sohu.com/upload/changyan.js"></script><script>window.changyan.api.config({appid: 'cyxiA9lvU',conf: 'prod_25f08bcf7cc29ea8bf2d089bf60b1687'});</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/assets/favo.png" alt="CodeFox"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">CodeFox</p><p class="is-size-6 is-block">追风赶月莫停留，平芜尽处是春山</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>广州 中国</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">17</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">5</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">10</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/codefoxs" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/codefoxs"><img src="/image/github.svg" style="height: 20px;width: 20px;"></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="知乎" href="https://www.zhihu.com/people/Keynes"><img src="/image/知乎.svg" style="height: 20px;width: 20px;"></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://lxxcandy.github.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">我的学术搭子😚</span></span><span class="level-right"><span class="level-item tag">lxxcandy.github.io</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/AI/"><span class="level-start"><span class="level-item">AI</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E5%85%AC%E5%8F%B8%E9%87%91%E8%9E%8D/"><span class="level-start"><span class="level-item">公司金融</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"><span class="level-start"><span class="level-item">统计学</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">编程学习</span></span><span class="level-end"><span class="level-item tag">12</span></span></a></li><li><a class="level is-mobile" href="/categories/%E9%87%91%E8%9E%8D%E5%AD%A6/"><span class="level-start"><span class="level-item">金融学</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/AI/"><span class="tag">AI</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Prompt/"><span class="tag">Prompt</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/SAS/"><span class="tag">SAS</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Stata/"><span class="tag">Stata</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/WRDS/"><span class="tag">WRDS</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%95%B0%E5%AD%A6/"><span class="tag">数学</span><span class="tag">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6/"><span class="tag">统计学</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%80%83%E5%8D%9A/"><span class="tag">考博</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%AE%A1%E9%87%8F%E7%BB%8F%E6%B5%8E%E5%AD%A6/"><span class="tag">计量经济学</span><span class="tag">8</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E9%87%91%E8%9E%8D%E5%AD%A6/"><span class="tag">金融学</span><span class="tag">1</span></a></div></div></div></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2025/11/"><span class="level-start"><span class="level-item">十一月 2025</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2025/05/"><span class="level-start"><span class="level-item">五月 2025</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/12/"><span class="level-start"><span class="level-item">十二月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/11/"><span class="level-start"><span class="level-item">十一月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/07/"><span class="level-start"><span class="level-item">七月 2024</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/06/"><span class="level-start"><span class="level-item">六月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/05/"><span class="level-start"><span class="level-item">五月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/04/"><span class="level-start"><span class="level-item">四月 2024</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2024/01/"><span class="level-start"><span class="level-item">一月 2024</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/05/"><span class="level-start"><span class="level-item">五月 2022</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><div class="column-right-shadow is-hidden-widescreen is-sticky"></div></div><div class="column column-right is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#0-数据库简介"><span class="level-left"><span class="level-item">0 数据库简介</span></span></a></li><li><a class="level is-mobile" href="#1-获取途径"><span class="level-left"><span class="level-item">1 获取途径</span></span></a></li><li><a class="level is-mobile" href="#2-数据筛选"><span class="level-left"><span class="level-item">2 数据筛选</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#2-1-选择日期范围"><span class="level-left"><span class="level-item">2.1 选择日期范围</span></span></a></li><li><a class="level is-mobile" href="#2-2-选择公司代码"><span class="level-left"><span class="level-item">2.2 选择公司代码</span></span></a></li><li><a class="level is-mobile" href="#2-3-变量筛选"><span class="level-left"><span class="level-item">2.3 变量筛选</span></span></a></li><li><a class="level is-mobile" href="#2-4-变量选择"><span class="level-left"><span class="level-item">2.4 变量选择</span></span></a></li><li><a class="level is-mobile" href="#2-5-导出格式"><span class="level-left"><span class="level-item">2.5 导出格式</span></span></a></li></ul></li><li><a class="level is-mobile" href="#3-数据下载"><span class="level-left"><span class="level-item">3 数据下载</span></span></a></li><li><a class="level is-mobile" href="#4-数据预处理"><span class="level-left"><span class="level-item">4 数据预处理</span></span></a></li><li><a class="level is-mobile" href="#5-常见变量"><span class="level-left"><span class="level-item">5 常见变量</span></span></a></li><li><a class="level is-mobile" href="#6-常用指标"><span class="level-left"><span class="level-item">6 常用指标</span></span></a></li></ul></div></div><script src="/js/toc.js" defer></script></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/assets/bar.png" alt="CodeFox" height="28"></a><p class="is-size-7"><span>&copy; 2025 CodeFox</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">共<span id="busuanzi_value_site_uv">0</span>个访客</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/codefoxs/codefoxs.github.io"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/javascript" id="MathJax-script" async>MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      chtml: {
+        matchFontHeight: false
+      }
+    };</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
