@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>CodeFox</title>
-  <icon>https://codefoxs.github.io/image/RSS.svg</icon>
+  
   
   <link href="https://codefoxs.github.io/atom.xml" rel="self"/>
   
